@@ -33,21 +33,24 @@ var  rmDir = function(dirPath) {
 
 module.exports = function(grunt) {
 
-    var replacePlaceholder = function(string, openingMark, closingMark,altEnabled){
+    var replacePlaceholder = function(string, openingMark, closingMark,altEnabled, isPluralString){
+        var pattern;
         if (closingMark !== undefined &&
             altEnabled &&
            string.indexOf(closingMark !== -1)){
-            if (string.indexOf(openingMark) !== -1){
-                string = string.replace(openingMark,"{{");
+            if (string.indexOf(openingMark) !== -1 && !isPluralString){
+                pattern = new RegExp(openingMark, 'g');
+                string = string.replace(pattern,"{{");
             }
-            if (string.indexOf(closingMark) !== -1){
-                string = string.replace(closingMark,"}}");
+            if (string.indexOf(closingMark) !== -1 && !isPluralString){
+                pattern = new RegExp(closingMark, 'g');
+                string = string.replace(pattern,"}}");
             }
         }
 
          //If there is no closing mark, then we have standard format: %0,
         if(string.indexOf(closingMark === -1)){
-            var pattern ="\\%([0-9]|[a-z])";
+            pattern ="\\%([0-9]|[a-z])";
             var re = new RegExp(pattern,"g");
             var index = string.indexOf(re);
             var substr = string.substr(index,index+2);
@@ -159,7 +162,7 @@ module.exports = function(grunt) {
                             }
                         }
 
-                        pluralizedStr = replacePlaceholder(pluralizedStr,options.placeholderStructure[0],options.placeholderStructure[1],options.enableAltPlaceholders);
+                        pluralizedStr = replacePlaceholder(pluralizedStr,options.placeholderStructure[0],options.placeholderStructure[1],options.enableAltPlaceholders, true);
                         strings[item.msgid] = pluralizedStr ;
                         if (singleFile){
                             singleFileStrings[item.msgid]=  pluralizedStr;
