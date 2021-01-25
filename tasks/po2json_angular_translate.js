@@ -34,7 +34,11 @@ var  rmDir = function(dirPath) {
 
 function getPluralForms(locale) {
     try {
-        return Object.keys(cldr.extractUnitPatterns(locale).long.unit.lengthMeter);
+        var cldrLocale = locale;
+        if (cldrLocale === 'no') {
+            cldrLocale = 'nb'; // cldr does not recognize Norvegian as 'no' only as 'nb' and 'nn', but some apps use 'no' as key for this language
+        }
+        return Object.keys(cldr.extractUnitPatterns(cldrLocale).long.unit.lengthMeter);
     } catch (ex) {
         return;
     }
